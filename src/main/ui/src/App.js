@@ -16,56 +16,61 @@ class App extends Component {
         }
     }
 
-     onConnected = () => {
+    onConnected = () => {
         console.log("Connected!!")
     }
 
-     onMessageReceived = (msg) => {
+    onMessageReceived = (msg) => {
         console.log('New Message Received!!', msg);
     }
 
-     onSendMessage = (msgText) => {
-        console.log(msgText);
+    onSendMessage = (msgText) => {
+        console.log("123123" + msgText);
+        if (this.state.username) {
+            this.clientRef.sendMessage("/chat-app/chat/1/sendMessage",
+                JSON.stringify({sender: this.state.username, content: msgText, type: 'CHAT'}));
+            this.setState({messageText: ''})
+        }
     }
 
-     handleLoginSubmit = (username) => {
+    handleLoginSubmit = (username) => {
         console.log(username, " Logged in..");
-        this.state.username = username;
-        this.enterRoom(1);
+        this.enterRoom(username, 1);
     }
 
-     enterRoom(newRoomId) {
-        let roomId = newRoomId;
-        let topic = `/chat-app/chat/${newRoomId}`;
+    enterRoom(username , newRoomId) {
+        console.log("456456");
+        this.clientRef.sendMessage("/chat-app/chat/" + newRoomId + "/addUser",
+            JSON.stringify({sender: username, messageType: 'JOIN'}));
+        this.setState({loggedIn: true});
+        this.setState({username:username})
 
-        this.clientRef.sendMessage("/chat-room/${roomId}",
-            JSON.stringify({sender: this.state.username, type: 'JOIN'}));
     }
 
-     onMessageReceive = (msg, topic) => {
+    onMessageReceive = (msg, topic) => {
+        console.log("qweqwew");
         this.setState(prevState => ({
             messages: [...prevState.messages, msg]
         }));
     }
 
     render() {
+
         return (
             <React.Fragment>
-
-                        <>
-                            <SockJsClient url='http://localhost:8080/sock'
-                                          topics={["/chat/1/addUser"]}
-                                          onMessage={msg => this.onMessageReceive(msg)}
-                                          onConnect={this.onConnected}
-                                          onDisconnect={console.log("Disconnected!")}
-                                          ref={(client) => {
-                                              this.clientRef = client
-                                              console.log(this.clientRef);
-                                          }}
-                            />
-                            <Input onSendMessage={this.onSendMessage} />
-                        </>
-                    <Login onSubmit={this.handleLoginSubmit}/>
+                <SockJsClient url='http://localhost:8080/sock'
+                              topics={["/chat-app/chat/"]}
+                              onMessage={msg => this.onMessageReceive(msg)}
+                              onConnect={this.onConnected}
+                              onDisconnect={console.log("Disconnected!")}
+                              ref={(client) => {
+                                  this.clientRef = client
+                              }}
+                />
+                <Input onSendMessage={this.onSendMessage}/>
+                <Login
+                    onSubmit={this.handleLoginSubmit}
+                />
 
             </React.Fragment>
         )
