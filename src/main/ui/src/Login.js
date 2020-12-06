@@ -11,7 +11,8 @@ const Login = ({ onSubmit }) => {
         onSubmit(username);
     }
 
-    return (
+    if (visible) {
+        return (
         <div>
             <TextField
                 label="Type your username"
@@ -30,7 +31,7 @@ const Login = ({ onSubmit }) => {
             </Button>
 
         </div>
-    )
+    )} else { <div></div>}
 }
 
 export default Login;

@@ -1,81 +1,75 @@
-import React, {useState} from 'react';
+import React, {Component} from 'react';
 import './App.css';
 import Login from "./Login";
 import Input from "./input";
 import SockJsClient from "react-stomp";
-import api from "./api";
-import stomp from "@stomp/stompjs"
 
-const App = () => {
-    // const [messages, setMessages] = useState([])
-    const [user, setUser] = useState(null)
-
-    let onConnected = () => {
-        console.log("Connected!!")
-        var socket = new SockJS('/sock');
-        var stompClient = stomp.over(socket);
-        stompClient.connect({}, onConnected, onError);
-        enterRoom(1);
+class App extends Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            loggedIn: false,
+            messageText: '',
+            username: null,
+            messages: [],
+            loginFormInvalid: true,
+        }
     }
 
-    let onMessageReceived = (msg) => {
+     onConnected = () => {
+        console.log("Connected!!")
+    }
+
+     onMessageReceived = (msg) => {
         console.log('New Message Received!!', msg);
     }
 
-    let onSendMessage = (msgText) => {
+     onSendMessage = (msgText) => {
         console.log(msgText);
-        api.send(user.username, msgText);
     }
 
-    let handleLoginSubmit = (username) => {
+     handleLoginSubmit = (username) => {
         console.log(username, " Logged in..");
-        let color = "#"+((1<<24)*Math.random()|0).toString(16)
-
-        console.log(username, color);
-        setUser({
-            username: username,
-            color: color
-        })
-
+        this.state.username = username;
+        this.enterRoom(1);
     }
 
-    function enterRoom(newRoomId) {
+     enterRoom(newRoomId) {
         let roomId = newRoomId;
         let topic = `/chat-app/chat/${newRoomId}`;
 
-        var currentSubscription = this.stomp.subscribe(`/chat-room/1`, onMessageReceived);
-        this.stomp.send(`${topic}/addUser`,
-            {},
-            JSON.stringify({sender: user.username, type: 'JOIN'})
-        );
+        this.clientRef.sendMessage("/chat-room/${roomId}",
+            JSON.stringify({sender: this.state.username, type: 'JOIN'}));
     }
 
-    let onMessageReceive = (msg, topic) => {
+     onMessageReceive = (msg, topic) => {
         this.setState(prevState => ({
             messages: [...prevState.messages, msg]
         }));
     }
 
-    return (
-        <div className="App">
+    render() {
+        return (
+            <React.Fragment>
 
-        {!!user ?
-              (
-                  <>
-                  <SockJsClient url='http://localhost:8080/sock'
-                                topics={["/chat/1/addUser"]}
-                                onMessage={msg => onMessageReceive(msg)}
-                                onConnect={onConnected}
-                                onDisconnect={console.log("Disconnected!")}
-                                debug={true}
-                  />
-                  <Input onSendMessage={onSendMessage} />
-                  </>
-              ) :
-              <Login onSubmit={handleLoginSubmit}/>
-        }
-        </div>
-    )
+                        <>
+                            <SockJsClient url='http://localhost:8080/sock'
+                                          topics={["/chat/1/addUser"]}
+                                          onMessage={msg => this.onMessageReceive(msg)}
+                                          onConnect={this.onConnected}
+                                          onDisconnect={console.log("Disconnected!")}
+                                          ref={(client) => {
+                                              this.clientRef = client
+                                              console.log(this.clientRef);
+                                          }}
+                            />
+                            <Input onSendMessage={this.onSendMessage} />
+                        </>
+                    <Login onSubmit={this.handleLoginSubmit}/>
+
+            </React.Fragment>
+        )
+    }
 }
 
 export default App;
