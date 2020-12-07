@@ -13,7 +13,7 @@ const Login = ({onSubmit}) => {
     }
 
     return (
-        <div className="message-input">
+        <div>
             <TextField
                 label="Type your username"
                 placeholder="Username"
@@ -24,11 +24,10 @@ const Login = ({onSubmit}) => {
                         handleSubmit();
                     }
                 }}
-                style={{height: "30px", width: "30%"}}
+                id="standard-basic"
             />
             <Button
-                style={{margin:"5px", top:"20px"}}
-                variant="contained" color="primary" onClick={handleSubmit}>
+                variant="contained" color="primary" onClick={handleSubmit} style={{}}>
                 Login
             </Button>
         </div>

@@ -36,3 +36,11 @@
         transform: rotate(360deg);
     }
 }
+
+.MuiFormControl-root {
+    display: block !important;
+}
+
+.activeUserText {
+    margin-left: 45%;
+}

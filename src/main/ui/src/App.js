@@ -13,7 +13,7 @@ class App extends Component {
             message: "",
             username: null,
             messages: [],
-            loginFormInvalid: true,
+            loginFormInvalid: true
         }
     }
 
@@ -28,7 +28,7 @@ class App extends Component {
     onSendMessage = (msgText) => {
         if (this.state.username) {
             this.setState({message: msgText});
-            this.state.messages.push({username: this.state.username, message: msgText});
+            // this.state.messages.push({username: this.state.username, message: msgText});
             this.clientRef.sendMessage("/chat-app/chat/1/sendMessage",
                 JSON.stringify({sender: this.state.username, content: msgText, messageType: 'CHAT'}));
             this.setState({message: ''})
@@ -38,6 +38,7 @@ class App extends Component {
     handleLoginSubmit = (username) => {
         console.log(username, " Logged in..");
         this.enterRoom(username, 1);
+        this.setState({username:username});
     }
 
     enterRoom(username , newRoomId) {
@@ -50,26 +51,25 @@ class App extends Component {
 
     onMessageReceive = (msg) => {
         if(msg.type === 'JOIN'){
-            this.state.messages.push({username: this.state.username, message: msg.sender + " joined the room!", type:'JOIN'});
+            this.state.messages.push({username: msg.sender, message: msg.sender + " joined the room!", type:'JOIN'});
         }else if(msg.type === 'LEAVE'){
-            this.state.messages.push({username: this.state.username, message: msg.sender + " left the room!", type:'LEAVE'});
+            this.state.messages.push({username: msg.sender, message: msg.sender + " left the room!", type:'LEAVE'});
         }else if(msg.type === 'CHAT'){
-            this.state.messages.push({username: this.state.username, message: msg.content, type:'CHAT'});
+            this.state.messages.push({username: msg.sender, message: msg.content, type:'CHAT'});
         }
-
-        // this.setState(prevState => ({
-        //     messages: [...prevState.messages, msg]
-        // }));
 
         this.setState({messages: this.state.messages})
     }
+
 
     render() {
 
         return (
             <React.Fragment>
+                <div style={{border: "1px solid", width: "30%"}}>
                 <Message
                     messages={this.state.messages}
+                    user={this.state.username}
                     />
                 <SockJsClient url='http://localhost:8080/sock'
                               topics={["/chat-room/1"]}
@@ -84,7 +84,7 @@ class App extends Component {
                 <Login
                     onSubmit={this.handleLoginSubmit}
                 />
-
+                </div>
             </React.Fragment>
         )
     }

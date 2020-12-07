@@ -15,11 +15,11 @@ const Input = ({onSendMessage}) => {
     }
 
     return (
-        <div className="message-input">
+        <div>
             <TextField
                 className="inputField"
                 label="Type your message here..."
-                placeholder="Enter your message and press ENTER"
+                placeholder="Enter your message"
                 onChange={e => onChange(e)}
                 margin="normal"
                 value={text}
@@ -28,10 +28,8 @@ const Input = ({onSendMessage}) => {
                         onSubmit(text);
                     }
                 }}
-                style={{height: "30px", width: "30%"}}
             />
             <Button
-                style={{margin:"5px", top:"20px"}}
                 variant="contained" color="primary" onClick={onSubmit}>
                 Send
             </Button>
