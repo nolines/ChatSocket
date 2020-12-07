@@ -1,6 +1,6 @@
 package com.chatroom.chat.model
 
-class Message(private var messageType: MessageType?, sender: String) {
+class Message(messageType: MessageType?, sender: String) {
 
     enum class MessageType {
         CHAT, JOIN, LEAVE
@@ -8,6 +8,7 @@ class Message(private var messageType: MessageType?, sender: String) {
 
     private var content: String? = null
     private var sender: String? = sender
+    private var messageType: MessageType? = messageType
 
     fun getType(): MessageType? {
         return messageType

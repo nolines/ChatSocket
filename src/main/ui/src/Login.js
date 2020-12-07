@@ -2,9 +2,10 @@ import React, {useState} from 'react';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
 
+
 const Login = ({onSubmit}) => {
 
-    const [username, setUsername, visible] = useState("");
+    const [username, setUsername] = useState("");
     let handleUserNameChange = event => setUsername(event.target.value);
 
     let handleSubmit = () => {
@@ -12,7 +13,7 @@ const Login = ({onSubmit}) => {
     }
 
     return (
-        <div>
+        <div className="message-input">
             <TextField
                 label="Type your username"
                 placeholder="Username"
@@ -23,12 +24,13 @@ const Login = ({onSubmit}) => {
                         handleSubmit();
                     }
                 }}
+                style={{height: "30px", width: "30%"}}
             />
-            <br/>
-            <Button variant="contained" color="primary" onClick={handleSubmit}>
+            <Button
+                style={{margin:"5px", top:"20px"}}
+                variant="contained" color="primary" onClick={handleSubmit}>
                 Login
             </Button>
-
         </div>
     )
 }

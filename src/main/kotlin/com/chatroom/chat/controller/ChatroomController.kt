@@ -18,17 +18,15 @@ class ChatroomController(val messagingTemplate: SimpMessagingTemplate) {
     private val logger: Logger = LoggerFactory.getLogger(ChatroomController::class.java)
 
     @MessageMapping("/chat/{roomId}/sendMessage")
-    @SendTo("/chat")
     fun sendMessage(@DestinationVariable roomId : String, @Payload chatMessage : Message) {
         logger.info(roomId +" Chat message received is " + chatMessage.getContent());
         messagingTemplate.convertAndSend(format("/chat-room/${roomId}"), chatMessage);
     }
 
     @MessageMapping("/chat/{roomId}/addUser")
-    @SendTo("/chat")
     fun addUser(@DestinationVariable roomId : String, @Payload chatMessage : Message,
                  headerAccessor: SimpMessageHeaderAccessor) {
-        val currentRoomId : String = headerAccessor.sessionAttributes?.put("room_id", roomId) as String
+        val currentRoomId : String? = headerAccessor.sessionAttributes?.put("room_id", roomId) as? String
         if (currentRoomId != null) {
             val leaveMessage = Message(Message.MessageType.LEAVE, chatMessage.getSender()!!)
             messagingTemplate.convertAndSend(format("/chat-room/${currentRoomId}"), leaveMessage);
@@ -36,6 +34,7 @@ class ChatroomController(val messagingTemplate: SimpMessagingTemplate) {
         headerAccessor.sessionAttributes?.put("name", chatMessage.getSender())
         messagingTemplate.convertAndSend(format("/chat-room/${roomId}"), chatMessage)
         logger.info("A new user added to the session " + chatMessage.getSender())
+
     }
 
 

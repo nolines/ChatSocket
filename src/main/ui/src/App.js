@@ -3,13 +3,14 @@ import './App.css';
 import Login from "./Login";
 import Input from "./input";
 import SockJsClient from "react-stomp";
+import Message from "./Message";
 
 class App extends Component {
     constructor(props) {
         super(props);
         this.state = {
             loggedIn: false,
-            messageText: '',
+            message: "",
             username: null,
             messages: [],
             loginFormInvalid: true,
@@ -25,11 +26,12 @@ class App extends Component {
     }
 
     onSendMessage = (msgText) => {
-        console.log("123123" + msgText);
         if (this.state.username) {
+            this.setState({message: msgText});
+            this.state.messages.push({username: this.state.username, message: msgText});
             this.clientRef.sendMessage("/chat-app/chat/1/sendMessage",
-                JSON.stringify({sender: this.state.username, content: msgText, type: 'CHAT'}));
-            this.setState({messageText: ''})
+                JSON.stringify({sender: this.state.username, content: msgText, messageType: 'CHAT'}));
+            this.setState({message: ''})
         }
     }
 
@@ -39,7 +41,6 @@ class App extends Component {
     }
 
     enterRoom(username , newRoomId) {
-        console.log("456456");
         this.clientRef.sendMessage("/chat-app/chat/" + newRoomId + "/addUser",
             JSON.stringify({sender: username, messageType: 'JOIN'}));
         this.setState({loggedIn: true});
@@ -47,19 +48,31 @@ class App extends Component {
 
     }
 
-    onMessageReceive = (msg, topic) => {
-        console.log("qweqwew");
-        this.setState(prevState => ({
-            messages: [...prevState.messages, msg]
-        }));
+    onMessageReceive = (msg) => {
+        if(msg.type === 'JOIN'){
+            this.state.messages.push({username: this.state.username, message: msg.sender + " joined the room!", type:'JOIN'});
+        }else if(msg.type === 'LEAVE'){
+            this.state.messages.push({username: this.state.username, message: msg.sender + " left the room!", type:'LEAVE'});
+        }else if(msg.type === 'CHAT'){
+            this.state.messages.push({username: this.state.username, message: msg.content, type:'CHAT'});
+        }
+
+        // this.setState(prevState => ({
+        //     messages: [...prevState.messages, msg]
+        // }));
+
+        this.setState({messages: this.state.messages})
     }
 
     render() {
 
         return (
             <React.Fragment>
+                <Message
+                    messages={this.state.messages}
+                    />
                 <SockJsClient url='http://localhost:8080/sock'
-                              topics={["/chat-app/chat/"]}
+                              topics={["/chat-room/1"]}
                               onMessage={msg => this.onMessageReceive(msg)}
                               onConnect={this.onConnected}
                               onDisconnect={console.log("Disconnected!")}

@@ -19,10 +19,4 @@ class WebSocketConfiguration : WebSocketMessageBrokerConfigurer {
     override fun registerStompEndpoints(registry: StompEndpointRegistry) {
         registry.addEndpoint("/sock").setAllowedOrigins("http://localhost:3000").withSockJS()
     }
-//
-//    @Bean
-//    fun getWebSocketHandler() : WebSocketHandler {
-//        return ChatroomHandler()
-//    }
-
 }
