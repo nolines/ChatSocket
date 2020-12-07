@@ -1,5 +1,7 @@
 package com.chatroom.chat.model
 
+import java.time.LocalDateTime
+
 class Message(messageType: MessageType?, sender: String) {
 
     enum class MessageType {
@@ -9,6 +11,7 @@ class Message(messageType: MessageType?, sender: String) {
     private var content: String? = null
     private var sender: String? = sender
     private var messageType: MessageType? = messageType
+    private var date: LocalDateTime? = LocalDateTime.now()
 
     fun getType(): MessageType? {
         return messageType
@@ -20,5 +23,9 @@ class Message(messageType: MessageType?, sender: String) {
 
     fun getSender() : String? {
         return sender
+    }
+
+    fun getDate(): LocalDateTime? {
+        return date
     }
 }

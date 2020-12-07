@@ -17,11 +17,17 @@ class Listener(val messagingTemplate: SimpMessagingTemplate) {
 
     private val logger: Logger = LoggerFactory.getLogger(Listener::class.java)
 
+    /**
+     * Receives websocket connections
+     * */
     @EventListener
     fun handleWebSocketConnectListener(event: SessionConnectedEvent?) {
         logger.info("Received a new web socket connection.")
     }
 
+    /**
+     * Its called when the user has been disconneted
+     * */
     @EventListener
     fun handleWebSocketDisconnectListener(event: SessionDisconnectEvent) {
         val headerAccessor = StompHeaderAccessor.wrap(event.message)

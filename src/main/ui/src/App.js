@@ -51,11 +51,11 @@ class App extends Component {
 
     onMessageReceive = (msg) => {
         if(msg.type === 'JOIN'){
-            this.state.messages.push({username: msg.sender, message: msg.sender + " joined the room!", type:'JOIN'});
+            this.state.messages.push({username: msg.sender, message: msg.sender + " joined the room!", type:'JOIN', date:msg.date});
         }else if(msg.type === 'LEAVE'){
-            this.state.messages.push({username: msg.sender, message: msg.sender + " left the room!", type:'LEAVE'});
+            this.state.messages.push({username: msg.sender, message: msg.sender + " left the room!", type:'LEAVE', date:msg.date});
         }else if(msg.type === 'CHAT'){
-            this.state.messages.push({username: msg.sender, message: msg.content, type:'CHAT'});
+            this.state.messages.push({username: msg.sender, message: msg.content, type:'CHAT', date:msg.date});
         }
 
         this.setState({messages: this.state.messages})

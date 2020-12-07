@@ -44,3 +44,7 @@
 .activeUserText {
     margin-left: 45%;
 }
+
+.text-muted{
+    opacity: 0.5;
+}
