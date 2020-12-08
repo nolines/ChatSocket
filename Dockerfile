@@ -18,4 +18,4 @@ COPY ${JAR_FILE} application.jar
 ADD ${JAR_FILE} chat-0.0.1-SNAPSHOT.jar
 
 # Run the jar file
-ENTRYPOINT ["java","-jar","/application.jar"]
+ENTRYPOINT ["java","-jar","/chat-0.0.1-SNAPSHOT.jar"]

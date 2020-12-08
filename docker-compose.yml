@@ -1,0 +1,14 @@
+version: '3'
+services:
+  chat-frontend:
+    image: frontend-chat:latest
+    environment:
+      PORT: 3000
+      PROXY_API: http://localhost:8080/
+    ports:
+      - 3000:3000
+
+  chat-backend:
+    image: backend-chat:latest
+    ports:
+      - 8080:8080
